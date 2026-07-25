@@ -1,0 +1,6 @@
+show=drun
+width=600
+lines=8
+prompt=Run
+insensitive=true
+allow_images=true

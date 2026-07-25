@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=KoboldOS
+Description=KoboldOS crimson/gold boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/koboldos
+ScriptFile=/usr/share/plymouth/themes/koboldos/koboldos.script

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+systemctl enable greetd
+systemctl enable NetworkManager
+systemctl set-default graphical.target

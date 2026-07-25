@@ -1,0 +1,28 @@
+/* Crimson / Charcoal / Gold / Ivory */
+window {
+    background-color: #1B1B1B;
+    color: #F5F0E6;
+    border: 2px solid #C8A24A;
+    border-radius: 8px;
+    font-family: "DejaVu Sans";
+    font-size: 14px;
+}
+
+#input {
+    margin: 8px;
+    padding: 8px;
+    background-color: #2A2A2A;
+    color: #F5F0E6;
+    border: none;
+    border-bottom: 2px solid #C8A24A;
+    border-radius: 4px;
+}
+
+#inner-box { margin: 4px; }
+#outer-box { margin: 4px; }
+#scroll { margin: 0; }
+#text { color: #F5F0E6; padding: 2px 6px; }
+
+#entry { padding: 4px; border-radius: 4px; }
+#entry:selected { background-color: #8B1E24; }
+#entry:selected #text { color: #F5F0E6; font-weight: bold; }

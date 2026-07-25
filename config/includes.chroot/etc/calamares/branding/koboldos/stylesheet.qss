@@ -1,0 +1,13 @@
+/* KoboldOS — crimson / charcoal / gold / ivory (kept light to avoid
+   breaking Calamares' layout; colours only) */
+QWidget            { color: #F5F0E6; }
+QLabel             { color: #F5F0E6; }
+QPushButton {
+    background-color: #8B1E24;
+    color: #F5F0E6;
+    border: 1px solid #C8A24A;
+    border-radius: 4px;
+    padding: 6px 14px;
+}
+QPushButton:hover    { background-color: #C8A24A; color: #1B1B1B; }
+QPushButton:disabled { background-color: #3A3A3A; color: #A89F8C; border-color: #3A3A3A; }

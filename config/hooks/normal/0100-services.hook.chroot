@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+systemctl enable NetworkManager
+# includes.chroot does not reliably preserve the +x bit across live-build
+# versions, so guarantee the sway launcher is executable in the built image.
+chmod 0755 /usr/local/bin/start-sway
+# Make the KoboldOS splash the default and bake it into the initramfs.
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+    plymouth-set-default-theme -R koboldos
+fi
+# Point Calamares at the KoboldOS branding component.
+if [ -f /etc/calamares/settings.conf ]; then
+    sed -i 's/^branding:.*/branding: koboldos/' /etc/calamares/settings.conf
+fi

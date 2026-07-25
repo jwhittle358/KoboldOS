@@ -1,0 +1,69 @@
+live-boot
+live-config
+live-config-systemd
+systemd-sysv
+firefox-esr
+calamares
+calamares-settings-debian
+qt5-image-formats-plugins
+qml-module-qtquick-controls
+qml-module-qtquick-controls2
+qml-module-qtquick-templates2
+qml-module-qtquick-window2
+qml-module-qtquick2
+udisks2
+dosfstools
+e2fsprogs
+btrfs-progs
+f2fs-tools
+xfsprogs
+jfsutils
+reiserfsprogs
+ntfs-3g
+grub-efi-amd64-bin
+# --- Wayland compositor + core session ---
+sway
+swaybg
+swayidle
+swaylock
+xwayland
+ 
+# --- Bar / launcher / terminal ---
+waybar
+wofi
+foot
+ 
+# --- Wayland utilities ---
+wl-clipboard
+grim
+slurp
+mako-notifier
+brightnessctl
+playerctl
+ 
+# --- Portals (screen share, native file pickers) ---
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+xdg-utils
+ 
+# --- Audio (PipeWire) ---
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+ 
+# --- Network ---
+network-manager
+network-manager-gnome
+ 
+# --- Session bits: login greeter + polkit agent ---
+mate-polkit
+ 
+# --- Fonts (Font Awesome supplies most waybar glyphs) ---
+fonts-dejavu
+fonts-font-awesome
+fonts-noto-color-emoji
+
+# --- System Packages ---
+sudo

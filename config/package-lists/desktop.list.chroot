@@ -1,0 +1,68 @@
+# --- Wayland compositor + core session ---
+sway
+swaybg
+swayidle
+swaylock
+xwayland
+
+# --- Bar / launcher / terminal ---
+waybar
+wofi
+foot
+
+# --- Wayland utilities ---
+wl-clipboard
+grim
+slurp
+mako-notifier
+brightnessctl
+playerctl
+
+# --- Portals (screen share, native file pickers) ---
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+xdg-utils
+
+# --- Audio (PipeWire) ---
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+
+# --- Network ---
+network-manager
+network-manager-gnome
+
+# --- Session bits: polkit agent ---
+mate-polkit
+# provides dbus-update-activation-environment (portal env propagation)
+dbus-x11
+
+# --- Fonts (Font Awesome supplies most waybar glyphs) ---
+fonts-dejavu
+fonts-font-awesome
+fonts-noto-color-emoji
+
+# --- GTK dark theming (so app dialogs / pavucontrol aren't default Adwaita) ---
+arc-theme
+papirus-icon-theme
+gnome-themes-extra
+
+# --- Boot splash ---
+plymouth
+# label plugin: needed for the LUKS passphrase prompt + boot-message text.
+# VERIFY IT EXISTS before rebuilding (a bad package name breaks the build):
+#   docker run --rm debian:trixie sh -c \
+#     'apt-get update -qq && apt-get install --dry-run plymouth-label >/dev/null && echo OK'
+# If that fails, the label plugin is bundled in 'plymouth' on your version —
+# delete the line below.
+plymouth-label
+
+# --- Graphical installer (Calamares) ---
+# VERIFY both exist in your suite before rebuilding (dry-run in a trixie
+# container) so a bad name can't break the build:
+#   docker run --rm debian:trixie sh -c 'apt-get update -qq && \
+#     apt-get install --dry-run calamares calamares-settings-debian >/dev/null && echo OK'
+calamares
+calamares-settings-debian

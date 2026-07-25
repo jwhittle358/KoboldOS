@@ -1,0 +1,73 @@
+# KoboldOS boot splash: logo + boot messages + LUKS passphrase prompt.
+
+Window.SetBackgroundTopColor(0.106, 0.106, 0.106);      # charcoal
+Window.SetBackgroundBottomColor(0.071, 0.071, 0.071);
+
+sw = Window.GetWidth();
+sh = Window.GetHeight();
+
+# Logo, scaled to at most half the screen height, centred in the upper third
+logo.image = Image("logo.png");
+lw = logo.image.GetWidth();
+lh = logo.image.GetHeight();
+maxh = sh * 0.5;
+if (lh > maxh) {
+    logo.image = logo.image.Scale(lw * maxh / lh, maxh);
+}
+logo.y = sh * 0.30 - logo.image.GetHeight() / 2;
+logo.sprite = Sprite(logo.image);
+logo.sprite.SetX(sw / 2 - logo.image.GetWidth() / 2);
+logo.sprite.SetY(logo.y);
+logo.bottom = logo.y + logo.image.GetHeight();
+
+# Gentle opacity pulse
+tick = 0;
+fun refresh() {
+    tick = tick + 1;
+    logo.sprite.SetOpacity(0.8 + 0.2 * Math.Sin(tick / 25));
+}
+Plymouth.SetRefreshFunction(refresh);
+
+# Boot messages near the bottom (ivory)
+msg.sprite = Sprite();
+fun message_callback(text) {
+    msg.image = Image.Text(text, 0.96, 0.94, 0.90);
+    msg.sprite.SetImage(msg.image);
+    msg.sprite.SetX(sw / 2 - msg.image.GetWidth() / 2);
+    msg.sprite.SetY(sh - 80);
+    msg.sprite.SetZ(10);
+}
+Plymouth.SetMessageFunction(message_callback);
+
+# LUKS / password prompt (hidden until requested)
+prompt.sprite = Sprite();
+bullets.sprite = Sprite();
+prompt.sprite.SetOpacity(0);
+bullets.sprite.SetOpacity(0);
+
+fun display_password_callback(text, count) {
+    p = Image.Text(text, 0.96, 0.94, 0.90);            # ivory prompt
+    prompt.sprite.SetImage(p);
+    prompt.sprite.SetX(sw / 2 - p.GetWidth() / 2);
+    prompt.sprite.SetY(logo.bottom + sh * 0.12);
+    prompt.sprite.SetZ(10);
+    prompt.sprite.SetOpacity(1);
+
+    dots = "";
+    for (i = 0; i < count; i = i + 1) {
+        dots = dots + "*";
+    }
+    b = Image.Text(dots, 0.78, 0.63, 0.29);            # gold bullets
+    bullets.sprite.SetImage(b);
+    bullets.sprite.SetX(sw / 2 - b.GetWidth() / 2);
+    bullets.sprite.SetY(logo.bottom + sh * 0.12 + 46);
+    bullets.sprite.SetZ(10);
+    bullets.sprite.SetOpacity(1);
+}
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+fun normal_callback() {
+    prompt.sprite.SetOpacity(0);
+    bullets.sprite.SetOpacity(0);
+}
+Plymouth.SetDisplayNormalFunction(normal_callback);

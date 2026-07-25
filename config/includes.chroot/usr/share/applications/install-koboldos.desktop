@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Install KoboldOS
+GenericName=System Installer
+Comment=Install KoboldOS to your computer
+Exec=pkexec /usr/bin/calamares -platform xcb
+Icon=/etc/calamares/branding/koboldos/logo.png
+Terminal=false
+Categories=System;Settings;
+Keywords=install;installer;calamares;
