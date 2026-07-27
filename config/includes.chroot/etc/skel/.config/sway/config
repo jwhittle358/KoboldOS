@@ -53,6 +53,7 @@ exec /usr/lib/mate-polkit/polkit-mate-authentication-agent-1
 ### Launch / window management
 bindsym $mod+Return exec $term
 bindsym $mod+d exec $menu
+bindsym $mod+Shift+f exec pcmanfm
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaynag -t warning \

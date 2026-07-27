@@ -66,3 +66,19 @@ plymouth-label
 #     apt-get install --dry-run calamares calamares-settings-debian >/dev/null && echo OK'
 calamares
 calamares-settings-debian
+
+# --- CLI tools & shell prompt ---
+curl
+git
+starship
+
+# --- File manager ---
+pcmanfm
+
+# --- Virtualisation: virt-manager GUI + libvirt system daemon + KVM/QEMU.
+#     A polkit rule (section 8g) lets local desktop users manage libvirt
+#     without group setup, so it works on first boot for any username. ---
+libvirt-daemon
+libvirt-daemon-system
+qemu-system-x86
+virt-manager

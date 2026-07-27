@@ -12,3 +12,7 @@ fi
 if [ -f /etc/calamares/settings.conf ]; then
     sed -i 's/^branding:.*/branding: koboldos/' /etc/calamares/settings.conf
 fi
+# Enable the Starship prompt for every new user (idempotent).
+if ! grep -q 'starship init bash' /etc/skel/.bashrc 2>/dev/null; then
+    echo 'eval "$(starship init bash)"' >> /etc/skel/.bashrc
+fi

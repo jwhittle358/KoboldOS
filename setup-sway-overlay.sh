@@ -135,6 +135,22 @@ plymouth-label
 #     apt-get install --dry-run calamares calamares-settings-debian >/dev/null && echo OK'
 calamares
 calamares-settings-debian
+
+# --- CLI tools & shell prompt ---
+curl
+git
+starship
+
+# --- File manager ---
+pcmanfm
+
+# --- Virtualisation: virt-manager GUI + libvirt system daemon + KVM/QEMU.
+#     A polkit rule (section 8g) lets local desktop users manage libvirt
+#     without group setup, so it works on first boot for any username. ---
+libvirt-daemon
+libvirt-daemon-system
+qemu-system-x86
+virt-manager
 EOF
 
 # ---------------------------------------------------------------------------
@@ -223,6 +239,7 @@ exec /usr/lib/mate-polkit/polkit-mate-authentication-agent-1
 ### Launch / window management
 bindsym $mod+Return exec $term
 bindsym $mod+d exec $menu
+bindsym $mod+Shift+f exec pcmanfm
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec swaynag -t warning \
@@ -804,6 +821,101 @@ polkit.addRule(function(action, subject) {
 });
 EOF
 
+# Let local, active desktop sessions manage libvirt (qemu:///system) without
+# 'libvirt' group membership or a password prompt — standard for a single-user
+# desktop, and works for any username on both live and installed systems.
+cat > config/includes.chroot/etc/polkit-1/rules.d/50-koboldos-libvirt.rules <<'EOF'
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.libvirt.unix.manage" && subject.local && subject.active) {
+        return polkit.Result.YES;
+    }
+});
+EOF
+
+# ---------------------------------------------------------------------------
+# 8h. Starship prompt config, shipped to every user via /etc/skel. The hook
+#     (section 9) appends the shell init line to /etc/skel/.bashrc.
+#     Crimson is used only as a background banner (too dark to read as text on
+#     charcoal); glyphs are all present in DejaVu Sans Mono (no Nerd Font).
+# ---------------------------------------------------------------------------
+cat > "$SKEL/starship.toml" <<'EOF'
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+
+format = """
+[╭─◆ ](bold #C8A24A)$username$hostname$directory$git_branch$git_status$cmd_duration$nodejs$python$rust$golang
+[╰─](bold #C8A24A)$character"""
+
+[character]
+success_symbol = "[❯](bold #C8A24A)"
+error_symbol   = "[❯](bold #B0313A)"
+vimcmd_symbol  = "[❮](bold #C8A24A)"
+
+[username]
+show_always = true
+style_user = "bold #C8A24A"
+style_root = "bold #B0313A"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "#A89F8C"
+format = "[@$hostname]($style) "
+
+[directory]
+style = "bold fg:#F5F0E6 bg:#8B1E24"
+read_only = " ×"
+read_only_style = "bold fg:#F5F0E6 bg:#8B1E24"
+truncation_length = 4
+truncation_symbol = "…/"
+format = "[ $path$read_only ]($style) "
+
+[git_branch]
+symbol = "⚑ "
+style = "bold #C8A24A"
+format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "#B0313A"
+format = "([$all_status$ahead_behind]($style)) "
+conflicted = "✗"
+ahead = "↑${count}"
+behind = "↓${count}"
+diverged = "↕↑${ahead_count}↓${behind_count}"
+untracked = "?${count}"
+modified = "●${count}"
+staged = "+${count}"
+renamed = "»${count}"
+deleted = "✘${count}"
+stashed = "≡"
+
+[cmd_duration]
+min_time = 2000
+style = "#A89F8C"
+format = "[took $duration]($style) "
+
+[nodejs]
+symbol = "node "
+style = "#6E7B3E"
+format = "[$symbol($version )]($style)"
+
+[python]
+symbol = "py "
+style = "#6E7B3E"
+format = "[$symbol($version )]($style)"
+
+[rust]
+symbol = "rs "
+style = "#C8A24A"
+format = "[$symbol($version )]($style)"
+
+[golang]
+symbol = "go "
+style = "#6E7B3E"
+format = "[$symbol($version )]($style)"
+EOF
+
 # ---------------------------------------------------------------------------
 # 9. Enable NetworkManager. No display manager to enable — sway is started
 #    by the tty1 profile.d snippet, so a multi-user (text) boot is fine and
@@ -827,6 +939,10 @@ fi
 # Point Calamares at the KoboldOS branding component.
 if [ -f /etc/calamares/settings.conf ]; then
     sed -i 's/^branding:.*/branding: koboldos/' /etc/calamares/settings.conf
+fi
+# Enable the Starship prompt for every new user (idempotent).
+if ! grep -q 'starship init bash' /etc/skel/.bashrc 2>/dev/null; then
+    echo 'eval "$(starship init bash)"' >> /etc/skel/.bashrc
 fi
 EOF
 chmod 755 config/hooks/normal/0100-services.hook.chroot
