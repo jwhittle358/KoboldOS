@@ -34,8 +34,11 @@
 #     config/includes.chroot/usr/share/plymouth/themes/koboldos/logo.png
 #   cp koboldos-logo.png \
 #     config/includes.chroot/etc/calamares/branding/koboldos/logo.png
+#   cp koboldos-nerd-fonts/*.ttf \
+#     config/includes.chroot/usr/share/fonts/truetype/nerd-fonts/
 # If either is missing the build still succeeds (wallpaper falls back to
-# solid charcoal; Plymouth falls back to text).
+# solid charcoal; Plymouth falls back to text). Without the fonts, terminal
+# and bar glyphs render as tofu — copy them in.
 # ---------------------------------------------------------------------------
 set -eu
 
@@ -60,6 +63,8 @@ mkdir -p \
     config/includes.chroot/etc/calamares/branding/koboldos \
     config/includes.chroot/usr/share/applications \
     config/includes.chroot/etc/polkit-1/rules.d \
+    config/includes.chroot/etc/chromium.d \
+    config/includes.chroot/usr/share/fonts/truetype/nerd-fonts \
     "$SKEL/sway" "$SKEL/waybar" "$SKEL/foot" "$SKEL/wofi" "$SKEL/mako" \
     "$SKEL/swaylock" "$SKEL/gtk-3.0" "$SKEL/gtk-4.0"
 
@@ -143,6 +148,9 @@ starship
 
 # --- File manager ---
 pcmanfm
+
+# --- Web browser ---
+chromium
 
 # --- Virtualisation: virt-manager GUI + libvirt system daemon + KVM/QEMU.
 #     A polkit rule (section 8g) lets local desktop users manage libvirt
@@ -325,47 +333,76 @@ cat > "$SKEL/waybar/config.jsonc" <<'EOF'
     "position": "top",
     "height": 30,
     "spacing": 6,
-    "modules-left": ["sway/workspaces", "sway/mode"],
-    "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "battery", "tray"],
-
-    "sway/workspaces": { "disable-scroll": true, "all-outputs": true },
-
+    "modules-left": [
+        "sway/workspaces",
+        "sway/mode"
+    ],
+    "modules-center": [
+        "clock"
+    ],
+    "modules-right": [
+        "pulseaudio",
+        "network",
+        "cpu",
+        "memory",
+        "battery",
+        "tray"
+    ],
+    "sway/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true
+    },
     "clock": {
-        "format": "{:%a %d %b  %H:%M}",
+        "format": " {:%a %d %b  %H:%M}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
     },
-
-    "cpu":    { "format": " {usage}%" },
-    "memory": { "format": " {}%" },
-
+    "cpu": {
+        "format": " {usage}%"
+    },
+    "memory": {
+        "format": " {}%"
+    },
     "battery": {
         "format": "{icon} {capacity}%",
-        "format-icons": ["", "", "", "", ""],
-        "states": { "warning": 30, "critical": 15 }
+        "format-icons": [
+            "",
+            "",
+            "",
+            "",
+            ""
+        ],
+        "states": {
+            "warning": 30,
+            "critical": 15
+        }
     },
-
     "network": {
-        "format-wifi": " {essid}",
-        "format-ethernet": " {ipaddr}",
-        "format-disconnected": " off"
+        "format-wifi": " {essid}",
+        "format-ethernet": " {ipaddr}",
+        "format-disconnected": " off"
     },
-
     "pulseaudio": {
         "format": "{icon} {volume}%",
-        "format-muted": " muted",
-        "format-icons": { "default": ["", "", ""] },
+        "format-muted": " muted",
+        "format-icons": {
+            "default": [
+                "",
+                "",
+                ""
+            ]
+        },
         "on-click": "pavucontrol"
     },
-
-    "tray": { "spacing": 8 }
+    "tray": {
+        "spacing": 8
+    }
 }
 EOF
 
 cat > "$SKEL/waybar/style.css" <<'EOF'
 /* Crimson / Charcoal / Gold / Ivory */
 * {
-    font-family: "DejaVu Sans", "Font Awesome 5 Free";
+    font-family: "JetBrainsMono Nerd Font Mono", "Font Awesome 5 Free";
     font-size: 13px;
     border: none;
     border-radius: 0;
@@ -416,7 +453,7 @@ EOF
 # ---------------------------------------------------------------------------
 cat > "$SKEL/foot/foot.ini" <<'EOF'
 # Crimson / Charcoal / Gold / Ivory
-font=DejaVu Sans Mono:size=11
+font=JetBrainsMono Nerd Font Mono:size=11
 pad=8x8
 
 [cursor]
@@ -835,8 +872,9 @@ EOF
 # ---------------------------------------------------------------------------
 # 8h. Starship prompt config, shipped to every user via /etc/skel. The hook
 #     (section 9) appends the shell init line to /etc/skel/.bashrc.
-#     Crimson is used only as a background banner (too dark to read as text on
-#     charcoal); glyphs are all present in DejaVu Sans Mono (no Nerd Font).
+#     Crimson is a powerline banner behind the directory; gold/ivory carry the
+#     foreground. Uses Nerd Font glyphs (JetBrainsMono Nerd Font Mono, shipped
+#     in section 1 + the font hook).
 # ---------------------------------------------------------------------------
 cat > "$SKEL/starship.toml" <<'EOF'
 "$schema" = 'https://starship.rs/config-schema.json'
@@ -864,15 +902,15 @@ style = "#A89F8C"
 format = "[@$hostname]($style) "
 
 [directory]
-style = "bold fg:#F5F0E6 bg:#8B1E24"
+style = "fg:#F5F0E6 bg:#8B1E24"
 read_only = " ×"
-read_only_style = "bold fg:#F5F0E6 bg:#8B1E24"
+read_only_style = "fg:#F5F0E6 bg:#8B1E24"
 truncation_length = 4
 truncation_symbol = "…/"
-format = "[ $path$read_only ]($style) "
+format = "[](fg:#8B1E24)[ $path$read_only ](bold $style)[](fg:#8B1E24) "
 
 [git_branch]
-symbol = "⚑ "
+symbol = " "
 style = "bold #C8A24A"
 format = "[$symbol$branch]($style) "
 
@@ -896,24 +934,33 @@ style = "#A89F8C"
 format = "[took $duration]($style) "
 
 [nodejs]
-symbol = "node "
+symbol = " "
 style = "#6E7B3E"
 format = "[$symbol($version )]($style)"
 
 [python]
-symbol = "py "
+symbol = " "
 style = "#6E7B3E"
 format = "[$symbol($version )]($style)"
 
 [rust]
-symbol = "rs "
+symbol = " "
 style = "#C8A24A"
 format = "[$symbol($version )]($style)"
 
 [golang]
-symbol = "go "
+symbol = " "
 style = "#6E7B3E"
 format = "[$symbol($version )]($style)"
+EOF
+
+# ---------------------------------------------------------------------------
+# 8i. Chromium: prefer native Wayland (crisper on HiDPI, proper fractional
+#     scaling) and fall back to XWayland automatically. Debian's chromium
+#     launcher sources shell snippets from /etc/chromium.d/*.
+# ---------------------------------------------------------------------------
+cat > config/includes.chroot/etc/chromium.d/wayland <<'EOF'
+export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --ozone-platform-hint=auto"
 EOF
 
 # ---------------------------------------------------------------------------
@@ -944,6 +991,8 @@ fi
 if ! grep -q 'starship init bash' /etc/skel/.bashrc 2>/dev/null; then
     echo 'eval "$(starship init bash)"' >> /etc/skel/.bashrc
 fi
+# Register the bundled Nerd Font.
+fc-cache -f >/dev/null 2>&1 || true
 EOF
 chmod 755 config/hooks/normal/0100-services.hook.chroot
 

@@ -75,6 +75,9 @@ starship
 # --- File manager ---
 pcmanfm
 
+# --- Web browser ---
+chromium
+
 # --- Virtualisation: virt-manager GUI + libvirt system daemon + KVM/QEMU.
 #     A polkit rule (section 8g) lets local desktop users manage libvirt
 #     without group setup, so it works on first boot for any username. ---

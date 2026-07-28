@@ -16,3 +16,5 @@ fi
 if ! grep -q 'starship init bash' /etc/skel/.bashrc 2>/dev/null; then
     echo 'eval "$(starship init bash)"' >> /etc/skel/.bashrc
 fi
+# Register the bundled Nerd Font.
+fc-cache -f >/dev/null 2>&1 || true

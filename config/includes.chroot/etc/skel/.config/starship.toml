@@ -23,15 +23,15 @@ style = "#A89F8C"
 format = "[@$hostname]($style) "
 
 [directory]
-style = "bold fg:#F5F0E6 bg:#8B1E24"
+style = "fg:#F5F0E6 bg:#8B1E24"
 read_only = " ×"
-read_only_style = "bold fg:#F5F0E6 bg:#8B1E24"
+read_only_style = "fg:#F5F0E6 bg:#8B1E24"
 truncation_length = 4
 truncation_symbol = "…/"
-format = "[ $path$read_only ]($style) "
+format = "[](fg:#8B1E24)[ $path$read_only ](bold $style)[](fg:#8B1E24) "
 
 [git_branch]
-symbol = "⚑ "
+symbol = " "
 style = "bold #C8A24A"
 format = "[$symbol$branch]($style) "
 
@@ -55,21 +55,21 @@ style = "#A89F8C"
 format = "[took $duration]($style) "
 
 [nodejs]
-symbol = "node "
+symbol = " "
 style = "#6E7B3E"
 format = "[$symbol($version )]($style)"
 
 [python]
-symbol = "py "
+symbol = " "
 style = "#6E7B3E"
 format = "[$symbol($version )]($style)"
 
 [rust]
-symbol = "rs "
+symbol = " "
 style = "#C8A24A"
 format = "[$symbol($version )]($style)"
 
 [golang]
-symbol = "go "
+symbol = " "
 style = "#6E7B3E"
 format = "[$symbol($version )]($style)"
