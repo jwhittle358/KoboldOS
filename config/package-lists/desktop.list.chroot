@@ -71,6 +71,7 @@ calamares-settings-debian
 curl
 git
 starship
+unzip
 
 # --- File manager ---
 pcmanfm

@@ -34,11 +34,9 @@
 #     config/includes.chroot/usr/share/plymouth/themes/koboldos/logo.png
 #   cp koboldos-logo.png \
 #     config/includes.chroot/etc/calamares/branding/koboldos/logo.png
-#   cp koboldos-nerd-fonts/*.ttf \
-#     config/includes.chroot/usr/share/fonts/truetype/nerd-fonts/
 # If either is missing the build still succeeds (wallpaper falls back to
-# solid charcoal; Plymouth falls back to text). Without the fonts, terminal
-# and bar glyphs render as tofu — copy them in.
+# solid charcoal; Plymouth falls back to text). The Nerd Font is downloaded
+# during the build (see the font hook) — no manual copy needed.
 # ---------------------------------------------------------------------------
 set -eu
 
@@ -145,6 +143,7 @@ calamares-settings-debian
 curl
 git
 starship
+unzip
 
 # --- File manager ---
 pcmanfm
@@ -991,8 +990,34 @@ fi
 if ! grep -q 'starship init bash' /etc/skel/.bashrc 2>/dev/null; then
     echo 'eval "$(starship init bash)"' >> /etc/skel/.bashrc
 fi
-# Register the bundled Nerd Font.
-fc-cache -f >/dev/null 2>&1 || true
+# --- Nerd Font: download at build time (avoids shipping/copying a binary
+#     .ttf, which is easy to corrupt in transfer). Needs network + curl +
+#     unzip during the build. Non-fatal: a failed download warns rather than
+#     aborting the whole build. ---
+NF_DIR=/usr/share/fonts/truetype/nerd-fonts
+NF_VER=v3.3.0
+NF_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/${NF_VER}/JetBrainsMono.zip"
+if command -v curl >/dev/null 2>&1 && command -v unzip >/dev/null 2>&1; then
+    _nftmp="$(mktemp -d)"
+    if curl -fsSL -o "$_nftmp/jbm.zip" "$NF_URL"; then
+        mkdir -p "$NF_DIR"
+        # install only the Mono (single-cell icon) weights we actually use
+        unzip -o -j "$_nftmp/jbm.zip" \
+            'JetBrainsMonoNerdFontMono-Regular.ttf' \
+            'JetBrainsMonoNerdFontMono-Bold.ttf' \
+            'JetBrainsMonoNerdFontMono-Italic.ttf' \
+            'JetBrainsMonoNerdFontMono-BoldItalic.ttf' \
+            -d "$NF_DIR" >/dev/null 2>&1 || true
+    else
+        echo "WARNING: Nerd Font download failed ($NF_URL) — glyphs will be tofu." >&2
+    fi
+    rm -rf "$_nftmp"
+else
+    echo "WARNING: curl/unzip missing — Nerd Font not installed." >&2
+fi
+# Clear the system font cache so it rebuilds fresh on first boot with the font
+# present (building it here can bake a stale cache before fonts are in place).
+rm -rf /var/cache/fontconfig/* 2>/dev/null || true
 EOF
 chmod 755 config/hooks/normal/0100-services.hook.chroot
 
